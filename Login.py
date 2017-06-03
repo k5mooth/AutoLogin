@@ -6,9 +6,9 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 SITES= {"twitter":("http://twitter.com/login", 0,1,"session[username_or_email]","session[password]","https://twitter.com/search-home",1,"q","No results"),
-		"facebook":("http://www.facebook.com/login",0,0,"email","pass","https://m.facebook.com/login/identify",0,"email","try again"),
-		"yahoo":("http://login.yahoo.com",1,0,"username", "password"),
-		"gmail":("http://accounts.google.com/Login",1,0,"Email","Passwd")}
+	"facebook":("http://www.facebook.com/login",0,0,"email","pass","https://m.facebook.com/login/identify",0,"email","try again"),
+	"yahoo":("http://login.yahoo.com",1,0,"username", "password"),
+	"gmail":("http://accounts.google.com/Login",1,0,"Email","Passwd")}
 
 class Login:
 	def __init__(self,username="", password=""):
