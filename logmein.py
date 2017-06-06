@@ -68,7 +68,17 @@ def check_fformat(infile):
     return numlines
 
 def log_into(args, client):
+    unsuccessful = []
+    successful = []
+
+    chosen = [ k for k,v in vars(args).items() if isinstance(v,bool) if v ]
+    for site in chosen: # not empty
+        if client.login(site, args.username, args.password) == 1:
+            successful.append(site)
+        else:
+            unsuccessful.append(site)
     
+    print "Logged into %d sites: %s" %  ( len(successful), ",".join(successful) )
 
 def main():
     max_lines = 0
@@ -82,11 +92,11 @@ def main():
         return -1
     
     if (args.input_file is not None):
+        f = open(args.input_file)
         max_lines = check_fformat(args.input_file)
         if max_lines == -1: 
             return -1
         
-    f = open(args.input_file)
     uname = args.username
     pword = args.password
 
@@ -94,6 +104,7 @@ def main():
         if (uname != "" and pword != ""): 
             log_into(args, login_client)
             break
+
         try:
             line = f.readline().split(":")
         except (EOFerror):
@@ -103,7 +114,8 @@ def main():
         args.password = line[1]
         log_into(args,login_client)
 
-    f.close()
+    if f is not None: f.close()
+
 
 if __name__ == "__main__":
     main()
