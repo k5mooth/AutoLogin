@@ -12,10 +12,11 @@ SITES= {
 	"gmail":("http://accounts.google.com/Login",1,0,"Email","Passwd")
 	}
 
+"""
 VERIFY = {
 	"check":("http://www.verifyemailaddress.org/",0,0,"email","not valid")
 	}
-
+"""
 class Login:
 	def __init__(self,username="", password=""):
 		self.br = mechanize.Browser()
