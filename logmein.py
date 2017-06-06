@@ -16,6 +16,7 @@ import re
 #   <file> format is 'user:pass'
 
 # ( (-t, -f, -g, -y), -a )* ; ((!username,!password), -i)*
+
 def msg():
     return "usage: %s [-h] [ [-a] | [-t] [-f] [-g] [-y] ] ( [-i FILE ] | username password )" % ( sys.argv[0] )
 
